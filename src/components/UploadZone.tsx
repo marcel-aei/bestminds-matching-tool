@@ -31,7 +31,11 @@ const UploadZone = ({ onUpload, isProcessing }: UploadZoneProps) => {
         accept=".pdf,.doc,.docx"
         className="hidden"
         onChange={(e) => {
-          if (e.target.files) onUpload(e.target.files);
+          if (e.target.files && e.target.files.length > 0) {
+            const dt = new DataTransfer();
+            Array.from(e.target.files).forEach((f) => dt.items.add(f));
+            onUpload(dt.files);
+          }
           e.target.value = "";
         }}
       />
