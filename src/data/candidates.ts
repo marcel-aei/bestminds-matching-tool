@@ -150,10 +150,11 @@ export const candidatePool: Candidate[] = [
 export function generateCandidatesFromFiles(files: FileList): Candidate[] {
   const shuffled = [...candidatePool].sort(() => Math.random() - 0.5);
   const count = Math.min(files.length, shuffled.length);
+  const batch = Date.now();
 
   return Array.from({ length: count }, (_, i) => ({
     ...shuffled[i],
-    id: `upload-${i}`,
+    id: `upload-${batch}-${i}`,
     fileName: files[i].name,
   }));
 }
