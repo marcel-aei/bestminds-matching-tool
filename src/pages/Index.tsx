@@ -4,7 +4,7 @@ import UploadZone from "@/components/UploadZone";
 import CandidateCard from "@/components/CandidateCard";
 import VacancySidebar from "@/components/VacancySidebar";
 import { vacancies } from "@/data/vacancies";
-import { mockCandidates, CandidateWithMatches } from "@/data/candidates";
+import { CandidateWithMatches, generateCandidatesFromFiles } from "@/data/candidates";
 import { matchCandidateToVacancies } from "@/lib/matching";
 import { Users } from "lucide-react";
 
@@ -12,12 +12,13 @@ const Index = () => {
   const [candidates, setCandidates] = useState<CandidateWithMatches[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleUpload = useCallback((_files: FileList) => {
+  const handleUpload = useCallback((files: FileList) => {
     setIsProcessing(true);
 
     // Simulate AI processing delay
     setTimeout(() => {
-      const processed = mockCandidates.map((candidate) => ({
+      const generated = generateCandidatesFromFiles(files);
+      const processed = generated.map((candidate) => ({
         ...candidate,
         matches: matchCandidateToVacancies(candidate, vacancies),
       }));
