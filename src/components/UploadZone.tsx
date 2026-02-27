@@ -30,7 +30,10 @@ const UploadZone = ({ onUpload, isProcessing }: UploadZoneProps) => {
         multiple
         accept=".pdf,.doc,.docx"
         className="hidden"
-        onChange={(e) => e.target.files && onUpload(e.target.files)}
+        onChange={(e) => {
+          if (e.target.files) onUpload(e.target.files);
+          e.target.value = "";
+        }}
       />
       <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent">
         {isProcessing ? (
