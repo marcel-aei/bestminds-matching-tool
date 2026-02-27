@@ -5,7 +5,7 @@ const Header = () => {
     <header className="border-b border-border bg-card">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-4">
-          <img src={valentumLogo} alt="Valentum Engineering" className="h-8" />
+          <img src={valentumLogo} alt="Valentum Engineering" className="h-12" />
           <div className="h-6 w-px bg-border" />
           <span className="font-display text-sm font-medium text-muted-foreground tracking-wide">
             Kandidaten-Matching
