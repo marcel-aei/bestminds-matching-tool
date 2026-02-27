@@ -22,7 +22,7 @@ const Index = () => {
         ...candidate,
         matches: matchCandidateToVacancies(candidate, vacancies),
       }));
-      setCandidates(processed);
+      setCandidates((prev) => [...prev, ...processed]);
       setIsProcessing(false);
     }, 1800);
   }, []);
