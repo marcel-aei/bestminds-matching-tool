@@ -1,6 +1,6 @@
 import { Vacancy } from "@/data/vacancies";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, MapPin, ExternalLink, Loader2 } from "lucide-react";
+import { Briefcase, MapPin, ExternalLink, Loader2, User, Mail } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -60,6 +60,25 @@ const VacancySidebar = ({ vacancies, isLoading }: VacancySidebarProps) => {
                       <p className="text-xs text-muted-foreground whitespace-pre-line line-clamp-6">
                         {v.profil}
                       </p>
+                    </div>
+                  )}
+                  {(v.ansprechpartner_name || v.ansprechpartner_email) && (
+                    <div className="border-t border-border pt-2">
+                      <p className="text-xs font-medium mb-1">Ansprechpartner:</p>
+                      {v.ansprechpartner_name && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <User className="h-3 w-3" />
+                          <span>{v.ansprechpartner_name}</span>
+                        </div>
+                      )}
+                      {v.ansprechpartner_email && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                          <Mail className="h-3 w-3" />
+                          <a href={`mailto:${v.ansprechpartner_email}`} className="hover:text-primary transition-colors underline">
+                            {v.ansprechpartner_email}
+                          </a>
+                        </div>
+                      )}
                     </div>
                   )}
                   {v.url && (

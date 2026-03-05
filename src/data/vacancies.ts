@@ -5,6 +5,8 @@ export interface Vacancy {
   aufgabengebiet: string;
   profil: string;
   url: string;
+  ansprechpartner_name: string;
+  ansprechpartner_email: string;
 }
 
 const WEBHOOK_URL = "https://valentum-engineering.app.n8n.cloud/webhook/get_vakanzliste";
@@ -21,6 +23,8 @@ export async function fetchVacancies(): Promise<Vacancy[]> {
     aufgabengebiet: item.aufgabengebiet ?? "",
     profil: item.profil ?? "",
     url: item.url ?? "",
+    ansprechpartner_name: item.ansprechpartner_name ?? "",
+    ansprechpartner_email: item.ansprechpartner_email ?? "",
   }));
 }
 
