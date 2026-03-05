@@ -23,6 +23,8 @@ export async function fetchVacancies(): Promise<Vacancy[]> {
     aufgabengebiet: item.aufgabengebiet ?? "",
     profil: item.profil ?? "",
     url: item.url ?? "",
+    ansprechpartner_name: item.ansprechpartner_name ?? "",
+    ansprechpartner_email: item.ansprechpartner_email ?? "",
   }));
 }
 
