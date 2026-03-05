@@ -1,6 +1,6 @@
 import { Vacancy } from "@/data/vacancies";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, MapPin, ExternalLink, Loader2 } from "lucide-react";
+import { Briefcase, MapPin, ExternalLink, Loader2, User, Mail } from "lucide-react";
 import {
   Popover,
   PopoverContent,
