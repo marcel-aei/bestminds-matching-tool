@@ -84,7 +84,7 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="font-display font-semibold text-sm truncate">{vacancy.title}</h4>
                         <Badge variant="outline" className="text-xs font-normal flex-shrink-0">
-                          {vacancy.location}
+                          {vacancy.ort}
                         </Badge>
                         {vacancy.url && (
                           <a href={vacancy.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0">
