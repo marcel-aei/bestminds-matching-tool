@@ -1,6 +1,6 @@
 import { Vacancy } from "@/data/vacancies";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, MapPin, ExternalLink } from "lucide-react";
+import { Briefcase, MapPin, ExternalLink, Loader2 } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -10,53 +10,72 @@ import { Button } from "@/components/ui/button";
 
 interface VacancySidebarProps {
   vacancies: Vacancy[];
+  isLoading?: boolean;
 }
 
-const VacancySidebar = ({ vacancies }: VacancySidebarProps) => {
+const VacancySidebar = ({ vacancies, isLoading }: VacancySidebarProps) => {
   return (
     <div className="glass-card rounded-xl p-5">
       <h3 className="font-display font-semibold text-sm mb-4 flex items-center gap-2">
         <Briefcase className="h-4 w-4 text-primary" />
-        Aktive Vakanzen ({vacancies.length})
+        Aktive Vakanzen ({isLoading ? "…" : vacancies.length})
       </h3>
-      <div className="space-y-3">
-        {vacancies.map((v) => (
-          <Popover key={v.id}>
-            <PopoverTrigger asChild>
-              <button className="w-full text-left p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
-                <p className="text-sm font-medium truncate">{v.title}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <MapPin className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{v.location}</span>
-                  <Badge variant="outline" className="text-xs font-normal ml-auto">
-                    {v.category}
-                  </Badge>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-8 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin mr-2" />
+          <span className="text-sm">Vakanzen werden geladen…</span>
+        </div>
+      ) : vacancies.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-4">
+          Keine Vakanzen verfügbar.
+        </p>
+      ) : (
+        <div className="space-y-3 max-h-[70vh] overflow-y-auto">
+          {vacancies.map((v) => (
+            <Popover key={v.id}>
+              <PopoverTrigger asChild>
+                <button className="w-full text-left p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
+                  <p className="text-sm font-medium truncate">{v.title}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <MapPin className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">{v.ort}</span>
+                  </div>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent side="left" align="start" className="w-80 max-h-96 overflow-y-auto">
+                <div className="space-y-3">
+                  <h4 className="font-display font-semibold text-sm">{v.title}</h4>
+                  {v.aufgabengebiet && (
+                    <div>
+                      <p className="text-xs font-medium mb-1">Aufgabengebiet:</p>
+                      <p className="text-xs text-muted-foreground whitespace-pre-line line-clamp-6">
+                        {v.aufgabengebiet}
+                      </p>
+                    </div>
+                  )}
+                  {v.profil && (
+                    <div>
+                      <p className="text-xs font-medium mb-1">Profil:</p>
+                      <p className="text-xs text-muted-foreground whitespace-pre-line line-clamp-6">
+                        {v.profil}
+                      </p>
+                    </div>
+                  )}
+                  {v.url && (
+                    <Button variant="outline" size="sm" className="w-full" asChild>
+                      <a href={v.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-3.5 w-3.5 mr-2" />
+                        Auf valentum.de ansehen
+                      </a>
+                    </Button>
+                  )}
                 </div>
-              </button>
-            </PopoverTrigger>
-            <PopoverContent side="left" align="start" className="w-80">
-              <div className="space-y-3">
-                <h4 className="font-display font-semibold text-sm">{v.title}</h4>
-                <p className="text-xs text-muted-foreground">{v.description}</p>
-                <div>
-                  <p className="text-xs font-medium mb-1">Anforderungen:</p>
-                  <ul className="text-xs text-muted-foreground space-y-0.5">
-                    {v.requirements.slice(0, 3).map((r, i) => (
-                      <li key={i}>• {r}</li>
-                    ))}
-                  </ul>
-                </div>
-                <Button variant="outline" size="sm" className="w-full" asChild>
-                  <a href={v.url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-3.5 w-3.5 mr-2" />
-                    Auf valentum.de ansehen
-                  </a>
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
-        ))}
-      </div>
+              </PopoverContent>
+            </Popover>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

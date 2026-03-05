@@ -1,22 +1,41 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import Header from "@/components/Header";
 import UploadZone from "@/components/UploadZone";
 import CandidateCard from "@/components/CandidateCard";
 import VacancySidebar from "@/components/VacancySidebar";
-import { vacancies } from "@/data/vacancies";
+import { fetchVacancies, Vacancy } from "@/data/vacancies";
 import { CandidateWithMatches, generateCandidatesFromFiles } from "@/data/candidates";
 import { matchCandidateToVacancies } from "@/lib/matching";
 import { Users, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const Index = () => {
+  const [vacancies, setVacancies] = useState<Vacancy[]>([]);
+  const [vacanciesLoading, setVacanciesLoading] = useState(true);
   const [candidates, setCandidates] = useState<CandidateWithMatches[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  useEffect(() => {
+    fetchVacancies()
+      .then((v) => {
+        setVacancies(v);
+        toast.success(`${v.length} Vakanzen geladen`);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Vakanzen konnten nicht geladen werden.");
+      })
+      .finally(() => setVacanciesLoading(false));
+  }, []);
+
   const handleUpload = useCallback((files: FileList) => {
+    if (vacancies.length === 0) {
+      toast.error("Vakanzen noch nicht geladen – bitte warten.");
+      return;
+    }
     setIsProcessing(true);
 
-    // Simulate AI processing delay
     setTimeout(() => {
       const generated = generateCandidatesFromFiles(files);
       const processed = generated.map((candidate) => ({
@@ -26,7 +45,7 @@ const Index = () => {
       setCandidates((prev) => [...prev, ...processed]);
       setIsProcessing(false);
     }, 1800);
-  }, []);
+  }, [vacancies]);
 
   const sortedCandidates = useMemo(() => {
     return [...candidates].sort((a, b) => {
@@ -55,7 +74,7 @@ const Index = () => {
     a.download = `kandidaten-matching-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [sortedCandidates]);
+  }, [sortedCandidates, vacancies]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,7 +124,7 @@ const Index = () => {
 
           {/* Sidebar */}
           <div>
-            <VacancySidebar vacancies={vacancies} />
+            <VacancySidebar vacancies={vacancies} isLoading={vacanciesLoading} />
           </div>
         </div>
       </main>
