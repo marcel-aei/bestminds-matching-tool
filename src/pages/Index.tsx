@@ -49,8 +49,8 @@ const Index = () => {
 
   const sortedCandidates = useMemo(() => {
     return [...candidates].sort((a, b) => {
-      const bestA = a.matches.length > 0 ? Math.max(...a.matches.map((m) => m.score)) : 0;
-      const bestB = b.matches.length > 0 ? Math.max(...b.matches.map((m) => m.score)) : 0;
+      const bestA = a.matches.length > 0 ? Math.max(...a.matches.map((m) => m.totalScore)) : 0;
+      const bestB = b.matches.length > 0 ? Math.max(...b.matches.map((m) => m.totalScore)) : 0;
       return bestB - bestA;
     });
   }, [candidates]);
