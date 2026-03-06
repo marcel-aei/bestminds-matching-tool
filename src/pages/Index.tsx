@@ -56,14 +56,14 @@ const Index = () => {
   }, [candidates]);
 
   const handleExport = useCallback(() => {
-    const rows: string[] = ["Kandidat;Titel;Vakanz;Score;Gematchte Skills;Begründung"];
+    const rows: string[] = ["Kandidat;Titel;Vakanz;Score;Tech Fit;Role Fit;Domain Fit;Level Fit;Sprache;Standort;Kommentar"];
     sortedCandidates.forEach((c) => {
       if (c.matches.length === 0) {
-        rows.push(`${c.name};${c.title};Keine passende Vakanz;0;;`);
+        rows.push(`${c.name};${c.title};Keine passende Vakanz;0;;;;;;;`);
       } else {
         c.matches.forEach((m) => {
           const v = vacancies.find((v) => v.id === m.vacancyId);
-          rows.push(`${c.name};${c.title};${v?.title ?? m.vacancyId};${m.score}%;${m.matchedSkills.join(", ")};${m.reasoning}`);
+          rows.push(`${c.name};${c.title};${v?.title ?? m.vacancyId};${m.totalScore}%;${m.techFit};${m.roleFit};${m.domainFit};${m.levelFit};${m.languageMatch ? "Ja" : "Nein"};${m.locationStatus};${m.comment}`);
         });
       }
     });

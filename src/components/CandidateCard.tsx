@@ -1,6 +1,6 @@
-import { CandidateWithMatches } from "@/data/candidates";
+import { CandidateWithMatches, MatchResult } from "@/data/candidates";
 import { Vacancy } from "@/data/vacancies";
-import { User, ChevronDown, ChevronUp, ExternalLink, Star } from "lucide-react";
+import { User, ChevronDown, ChevronUp, ExternalLink, Star, Check, X, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
@@ -10,20 +10,51 @@ interface CandidateCardProps {
 }
 
 function getScoreColor(score: number) {
-  if (score >= 70) return "bg-match-high text-white";
-  if (score >= 40) return "bg-match-medium text-white";
+  if (score >= 60) return "bg-match-high text-white";
+  if (score >= 35) return "bg-match-medium text-white";
   return "bg-match-low text-white";
 }
 
 function getScoreLabel(score: number) {
-  if (score >= 70) return "Stark";
-  if (score >= 40) return "Mittel";
+  if (score >= 60) return "Stark";
+  if (score >= 35) return "Mittel";
   return "Gering";
+}
+
+/** Renders 1–5 dots for a dimension */
+function DotRating({ value, max = 5 }: { value: number; max?: number }) {
+  return (
+    <div className="flex gap-1">
+      {Array.from({ length: max }, (_, i) => (
+        <div
+          key={i}
+          className={`h-2.5 w-2.5 rounded-full transition-colors ${
+            i < value
+              ? value >= 4
+                ? "bg-match-high"
+                : value >= 3
+                ? "bg-match-medium"
+                : "bg-match-low"
+              : "bg-border"
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function DimensionRow({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-xs text-muted-foreground whitespace-nowrap">{label}</span>
+      <DotRating value={value} />
+    </div>
+  );
 }
 
 const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
   const [expanded, setExpanded] = useState(true);
-  const topMatches = candidate.matches.filter((m) => m.score >= 40);
+  const topMatches = candidate.matches.filter((m) => m.totalScore >= 60);
 
   return (
     <div className="glass-card rounded-xl overflow-hidden">
@@ -51,7 +82,11 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
               {topMatches.length} stark
             </Badge>
           )}
-          {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+          {expanded ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
         </div>
       </button>
 
@@ -73,39 +108,84 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
                 const vacancy = vacancies.find((v) => v.id === match.vacancyId);
                 if (!vacancy) return null;
                 return (
-                  <div key={match.vacancyId} className="flex items-start gap-4 p-5">
-                    {/* Score */}
-                    <div className={`flex-shrink-0 flex h-11 w-11 items-center justify-center rounded-lg text-sm font-bold ${getScoreColor(match.score)}`}>
-                      {match.score}%
-                    </div>
-
-                    {/* Details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-display font-semibold text-sm truncate">{vacancy.title}</h4>
-                        <Badge variant="outline" className="text-xs font-normal flex-shrink-0">
-                          {vacancy.ort}
-                        </Badge>
-                        {vacancy.url && (
-                          <a href={vacancy.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0">
-                            <ExternalLink className="h-3.5 w-3.5" />
-                          </a>
-                        )}
+                  <div key={match.vacancyId} className="p-5">
+                    {/* Top row: score + vacancy title */}
+                    <div className="flex items-start gap-4 mb-3">
+                      {/* Total Score */}
+                      <div
+                        className={`flex-shrink-0 flex h-12 w-12 items-center justify-center rounded-lg text-sm font-bold ${getScoreColor(match.totalScore)}`}
+                      >
+                        {match.totalScore}%
                       </div>
-                      <p className="text-xs text-muted-foreground mb-2">{match.reasoning}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {match.matchedSkills.map((skill) => (
-                          <Badge key={skill} variant="secondary" className="text-xs font-normal bg-accent text-accent-foreground">
-                            {skill}
+
+                      {/* Vacancy info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-display font-semibold text-sm truncate">
+                            {vacancy.title}
+                          </h4>
+                          <Badge variant="outline" className="text-xs font-normal flex-shrink-0">
+                            {vacancy.ort}
                           </Badge>
-                        ))}
+                          {vacancy.url && (
+                            <a
+                              href={vacancy.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </a>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {getScoreLabel(match.totalScore)}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Score label */}
-                    <div className="flex-shrink-0">
-                      <span className="text-xs text-muted-foreground">{getScoreLabel(match.score)}</span>
+                    {/* Dimension grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-2 mb-3 pl-16">
+                      <DimensionRow label="Tech Fit" value={match.techFit} />
+                      <DimensionRow label="Role Fit" value={match.roleFit} />
+                      <DimensionRow label="Domain Fit" value={match.domainFit} />
+                      <DimensionRow label="Level Fit" value={match.levelFit} />
                     </div>
+
+                    {/* Flags row */}
+                    <div className="flex items-center gap-4 mb-3 pl-16">
+                      <div className="flex items-center gap-1.5 text-xs">
+                        {match.languageMatch ? (
+                          <Check className="h-3.5 w-3.5 text-success" />
+                        ) : (
+                          <X className="h-3.5 w-3.5 text-destructive" />
+                        )}
+                        <span className="text-muted-foreground">Sprache</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span
+                          className={
+                            match.locationStatus === "ok"
+                              ? "text-success"
+                              : "text-warning"
+                          }
+                        >
+                          {match.locationStatus === "ok"
+                            ? "Standort passt"
+                            : match.locationStatus === "relocation"
+                            ? "Umzug nötig"
+                            : match.locationStatus}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Comment */}
+                    {match.comment && (
+                      <div className="pl-16 text-xs text-muted-foreground leading-relaxed bg-muted/30 rounded-md p-3">
+                        {match.comment}
+                      </div>
+                    )}
                   </div>
                 );
               })}
