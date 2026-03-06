@@ -111,7 +111,7 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
           </div>
           <div>
             <h3 className="font-display font-semibold text-base">{candidate.name}</h3>
-            <p className="text-sm text-muted-foreground">{candidate.title}</p>
+            {candidate.title && <p className="text-sm text-muted-foreground">{candidate.title}</p>}
           </div>
         </div>
         <div className="flex items-center gap-3">
