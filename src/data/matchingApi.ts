@@ -11,7 +11,8 @@ interface WebhookMatchResult {
   level_fit: number | null;
   language_match: boolean | null;
   location_status: "ok" | "commutable" | "relocation_needed" | "remote_only" | "mismatch" | null;
-  Kommentar: string;
+  Kommentar?: string;
+  kommentar?: string;
   vakanz_title: string;
   vakanz_id: number;
   vakanz_url: string;
@@ -67,7 +68,7 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
       levelFit,
       languageMatch,
       locationStatus,
-      comment: item.Kommentar ?? "",
+      comment: item.Kommentar ?? item.kommentar ?? "",
       totalScore,
     });
   }
