@@ -52,10 +52,10 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
       grouped.set(name, []);
     }
 
-    const techFit = item.tech_fit ?? null;
-    const roleFit = item.role_fit ?? null;
-    const domainFit = item.domain_fit ?? null;
-    const levelFit = item.level_fit ?? null;
+    const techFit = item["Tech Fit"] ?? item.tech_fit ?? null;
+    const roleFit = item["Role Fit"] ?? item.role_fit ?? null;
+    const domainFit = item["Domain Fit"] ?? item.domain_fit ?? null;
+    const levelFit = item["Level Fit"] ?? item.level_fit ?? null;
     const languageMatch = item.language_match ?? null;
     const locationStatus = item.location_status ?? null;
 
