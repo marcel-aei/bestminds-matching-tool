@@ -42,13 +42,16 @@ export function matchCandidateToVacancies(candidate: Candidate, vacancies: Vacan
       const denominator = Math.max(uniqueWords * 0.15, 5);
       const rawScore = Math.min(5, Math.round((matchedSkills.length / denominator) * 5));
 
-      // Generate plausible dimension scores from matched skills
-      const techFit = Math.max(1, Math.min(5, rawScore));
-      const roleFit = Math.max(1, Math.min(5, rawScore + (Math.random() > 0.5 ? 1 : -1)));
-      const domainFit = Math.max(1, Math.min(5, rawScore + Math.floor(Math.random() * 2)));
-      const levelFit = Math.max(1, Math.min(5, Math.ceil(Math.random() * 5)));
-      const languageMatch = Math.random() > 0.2;
-      const locationStatus: "ok" | "remote_unclear" | "mismatch" = Math.random() > 0.3 ? "ok" : "remote_unclear";
+      // Generate plausible dimension scores with some null values and strong candidates
+      const techFit: number | null = Math.random() > 0.1 ? Math.max(0, Math.min(5, rawScore + Math.floor(Math.random() * 2))) : null;
+      const roleFit: number | null = Math.random() > 0.1 ? Math.max(0, Math.min(5, rawScore + (Math.random() > 0.5 ? 1 : -1))) : null;
+      const domainFit: number | null = Math.random() > 0.15 ? Math.max(0, Math.min(5, rawScore + Math.floor(Math.random() * 2))) : null;
+      const levelFit: number | null = Math.random() > 0.1 ? Math.max(0, Math.min(5, Math.ceil(Math.random() * 5))) : null;
+      const languageMatch: boolean | null = Math.random() > 0.15 ? Math.random() > 0.2 : null;
+      const locationStatus: "ok" | "remote_unclear" | "mismatch" | null =
+        Math.random() > 0.15
+          ? (Math.random() > 0.3 ? "ok" : Math.random() > 0.5 ? "remote_unclear" : "mismatch")
+          : null;
 
       const totalScore = computeTotalScore(techFit, roleFit, domainFit, levelFit, languageMatch, locationStatus);
 

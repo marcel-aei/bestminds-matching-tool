@@ -50,7 +50,7 @@ function DotRating({ value }: { value: number | null }) {
 function FitItem({ label, value }: { label: string; value: number | null }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[11px] text-muted-foreground leading-none">{label}</span>
+      <span className="text-[11px] text-muted-foreground leading-none w-[72px] flex-shrink-0">{label}-Fit</span>
       <DotRating value={value} />
     </div>
   );
