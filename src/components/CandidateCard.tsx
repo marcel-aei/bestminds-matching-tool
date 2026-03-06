@@ -134,9 +134,11 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
 
       {expanded && (
         <div className="border-t border-border">
-          <div className="px-5 py-3 bg-muted/30 text-sm text-muted-foreground">
-            {candidate.summary} · {candidate.experience} · {candidate.education}
-          </div>
+          {candidate.summary && (
+            <div className="px-5 py-3 bg-muted/30 text-sm text-muted-foreground">
+              {candidate.summary}{candidate.experience ? ` · ${candidate.experience}` : ""}{candidate.education ? ` · ${candidate.education}` : ""}
+            </div>
+          )}
 
           {candidate.matches.length === 0 ? (
             <div className="p-5 text-sm text-muted-foreground text-center">
