@@ -1,35 +1,31 @@
-import { Upload, Brain, Search, CheckCircle2 } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 
 interface UploadZoneProps {
   onUpload: (files: FileList) => void;
   isProcessing: boolean;
 }
 
-const STEPS = [
-  { icon: Upload, label: "Dokumente werden hochgeladen…" },
-  { icon: Brain, label: "KI analysiert Kandidatenprofile…" },
-  { icon: Search, label: "Matching mit Vakanzen läuft…" },
-  { icon: CheckCircle2, label: "Ergebnisse werden aufbereitet…" },
+const MESSAGES = [
+  "Dokumente werden analysiert…",
+  "KI-Matching läuft…",
+  "Ergebnisse werden aufbereitet…",
 ];
 
 const UploadZone = ({ onUpload, isProcessing }: UploadZoneProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [stepIndex, setStepIndex] = useState(0);
   const [fileCount, setFileCount] = useState(0);
+  const [msgIndex, setMsgIndex] = useState(0);
 
-  // Cycle through steps with pulse animation
-  useEffect(() => {
-    if (!isProcessing) {
-      setStepIndex(0);
-      return;
-    }
+  // Rotate status text
+  useState(() => {
+    if (!isProcessing) return;
     const interval = setInterval(() => {
-      setStepIndex((prev) => (prev + 1) % STEPS.length);
-    }, 4000);
+      setMsgIndex((prev) => (prev + 1) % MESSAGES.length);
+    }, 5000);
     return () => clearInterval(interval);
-  }, [isProcessing]);
+  });
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -50,42 +46,17 @@ const UploadZone = ({ onUpload, isProcessing }: UploadZoneProps) => {
   };
 
   if (isProcessing) {
-    const step = STEPS[stepIndex];
-    const StepIcon = step.icon;
-
     return (
       <div className="glass-card rounded-xl p-8 text-center">
         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-          <StepIcon className="h-7 w-7 text-primary animate-pulse" />
+          <Loader2 className="h-7 w-7 text-primary animate-spin" />
         </div>
-
         <h3 className="font-display text-lg font-semibold mb-1">
-          {step.label}
+          {MESSAGES[msgIndex]}
         </h3>
-        <p className="text-sm text-muted-foreground mb-5">
+        <p className="text-sm text-muted-foreground">
           {fileCount} {fileCount === 1 ? "Dokument" : "Dokumente"} werden verarbeitet
         </p>
-
-        {/* Step indicators – pulse dots, no progress bar */}
-        <div className="flex justify-center gap-6 mt-4">
-          {STEPS.map((s, i) => {
-            const Icon = s.icon;
-            const isActive = i === stepIndex;
-            return (
-              <div key={i} className="flex flex-col items-center gap-1">
-                <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full transition-all duration-500 ${
-                    isActive
-                      ? "bg-primary/20 text-primary ring-2 ring-primary/30 scale-110"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  <Icon className={`h-4 w-4 ${isActive ? "animate-pulse" : ""}`} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
       </div>
     );
   }
