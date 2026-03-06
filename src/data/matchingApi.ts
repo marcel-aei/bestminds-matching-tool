@@ -15,7 +15,6 @@ interface WebhookMatchResult {
   vakanz_title: string;
   vakanz_id: number;
   vakanz_url: string;
-  // ignored: model, prompt_tokens, completion_tokens
 }
 
 /**
@@ -40,13 +39,13 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
   const raw: WebhookMatchResult[] = await res.json();
 
   // Group results by candidate_name
-  const grouped = new Map<string, { matches: MatchResult[]; fileName: string }>();
+  const grouped = new Map<string, MatchResult[]>();
 
   for (const item of raw) {
     const name = item.candidate_name ?? "Unbekannt";
 
     if (!grouped.has(name)) {
-      grouped.set(name, { matches: [], fileName: "" });
+      grouped.set(name, []);
     }
 
     const techFit = item.tech_fit ?? null;
@@ -58,7 +57,7 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
 
     const totalScore = computeTotalScore(techFit, roleFit, domainFit, levelFit, languageMatch, locationStatus);
 
-    grouped.get(name)!.matches.push({
+    grouped.get(name)!.push({
       vacancyId: String(item.vakanz_id),
       vacancyTitle: item.vakanz_title,
       vacancyUrl: item.vakanz_url,
@@ -78,20 +77,13 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
   let idx = 0;
   const results: CandidateWithMatches[] = [];
 
-  for (const [name, data] of grouped) {
-    // Sort matches by score descending
-    data.matches.sort((a, b) => b.totalScore - a.totalScore);
+  for (const [name, matches] of grouped) {
+    matches.sort((a, b) => b.totalScore - a.totalScore);
 
     results.push({
       id: `api-${batch}-${idx++}`,
       name,
-      title: "",
-      fileName: "",
-      skills: [],
-      experience: "",
-      education: "",
-      summary: "",
-      matches: data.matches,
+      matches,
     });
   }
 
