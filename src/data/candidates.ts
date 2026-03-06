@@ -11,9 +11,14 @@ export interface Candidate {
 
 export interface MatchResult {
   vacancyId: string;
-  score: number;
-  matchedSkills: string[];
-  reasoning: string;
+  techFit: number;       // 1–5
+  roleFit: number;       // 1–5
+  domainFit: number;     // 1–5
+  levelFit: number;      // 1–5
+  languageMatch: boolean;
+  locationStatus: string; // "ok" | "relocation" | "remote" etc.
+  comment: string;
+  totalScore: number;    // computed 0–100
 }
 
 export interface CandidateWithMatches extends Candidate {
