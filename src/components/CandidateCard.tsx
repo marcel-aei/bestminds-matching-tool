@@ -111,7 +111,6 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
           </div>
           <div>
             <h3 className="font-display font-semibold text-base">{candidate.name}</h3>
-            {candidate.title && <p className="text-sm text-muted-foreground">{candidate.title}</p>}
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -134,11 +133,6 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
 
       {expanded && (
         <div className="border-t border-border">
-          {candidate.summary && (
-            <div className="px-5 py-3 bg-muted/30 text-sm text-muted-foreground">
-              {candidate.summary}{candidate.experience ? ` · ${candidate.experience}` : ""}{candidate.education ? ` · ${candidate.education}` : ""}
-            </div>
-          )}
 
           {candidate.matches.length === 0 ? (
             <div className="p-5 text-sm text-muted-foreground text-center">
