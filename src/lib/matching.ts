@@ -2,24 +2,41 @@ import { Candidate, MatchResult } from "@/data/candidates";
 import { Vacancy } from "@/data/vacancies";
 
 function computeTotalScore(
-  techFit: number,
-  roleFit: number,
-  domainFit: number,
-  levelFit: number,
-  languageMatch: boolean,
-  locationStatus: string
+  techFit: number | null,
+  roleFit: number | null,
+  domainFit: number | null,
+  levelFit: number | null,
+  languageMatch: boolean | null,
+  locationStatus: string | null
 ): number {
-  // Weighted: tech 30%, role 30%, domain 20%, level 10%, language 5%, location 5%
-  const base =
-    techFit * 0.3 +
-    roleFit * 0.3 +
-    domainFit * 0.2 +
-    levelFit * 0.1;
-  const langBonus = languageMatch ? 0.05 : 0;
-  const locBonus = locationStatus === "ok" ? 0.05 : locationStatus === "remote" ? 0.03 : 0;
-  // base max = 5*0.3+5*0.3+5*0.2+5*0.1 = 5, so normalise to 0–100
-  const raw = ((base / 5) + langBonus + locBonus) * 100;
-  return Math.min(100, Math.round(raw));
+  // Weighted dimensions – null values are excluded and weight redistributed
+  const dims: { value: number | null; weight: number }[] = [
+    { value: techFit, weight: 0.3 },
+    { value: roleFit, weight: 0.3 },
+    { value: domainFit, weight: 0.2 },
+    { value: levelFit, weight: 0.1 },
+  ];
+
+  const available = dims.filter((d) => d.value !== null);
+  const nullCount = dims.length - available.length;
+
+  // If no dimensions available, return 0
+  if (available.length === 0) return 0;
+
+  // Redistribute weight proportionally among available dimensions
+  const totalAvailableWeight = available.reduce((sum, d) => sum + d.weight, 0);
+  const base = available.reduce((sum, d) => sum + (d.value! / 5) * (d.weight / totalAvailableWeight), 0);
+
+  // Confidence penalty: each missing dimension reduces the max possible score
+  // 0 missing → 100% cap, 1 missing → 85% cap, 2 → 70%, 3 → 55%, 4 → 0%
+  const confidenceCap = Math.max(0, 1 - nullCount * 0.15);
+
+  // Language & location bonuses (only if known)
+  const langBonus = languageMatch === true ? 0.05 : 0;
+  const locBonus = locationStatus === "ok" ? 0.05 : locationStatus === "remote_unclear" ? 0.02 : 0;
+
+  const raw = (base + langBonus + locBonus) * 100;
+  return Math.min(100, Math.round(raw * confidenceCap));
 }
 
 export { computeTotalScore };
