@@ -1,7 +1,6 @@
-import { Upload, FileText, Brain, Search, CheckCircle2 } from "lucide-react";
+import { Upload, Brain, Search, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef, useState, useEffect } from "react";
-import { Progress } from "@/components/ui/progress";
 
 interface UploadZoneProps {
   onUpload: (files: FileList) => void;
@@ -20,14 +19,14 @@ const UploadZone = ({ onUpload, isProcessing }: UploadZoneProps) => {
   const [stepIndex, setStepIndex] = useState(0);
   const [fileCount, setFileCount] = useState(0);
 
-  // Cycle through loading steps while processing
+  // Cycle through steps with pulse animation
   useEffect(() => {
     if (!isProcessing) {
       setStepIndex(0);
       return;
     }
     const interval = setInterval(() => {
-      setStepIndex((prev) => Math.min(prev + 1, STEPS.length - 1));
+      setStepIndex((prev) => (prev + 1) % STEPS.length);
     }, 4000);
     return () => clearInterval(interval);
   }, [isProcessing]);
@@ -53,7 +52,6 @@ const UploadZone = ({ onUpload, isProcessing }: UploadZoneProps) => {
   if (isProcessing) {
     const step = STEPS[stepIndex];
     const StepIcon = step.icon;
-    const progress = ((stepIndex + 1) / STEPS.length) * 100;
 
     return (
       <div className="glass-card rounded-xl p-8 text-center">
@@ -65,35 +63,24 @@ const UploadZone = ({ onUpload, isProcessing }: UploadZoneProps) => {
           {step.label}
         </h3>
         <p className="text-sm text-muted-foreground mb-5">
-          {fileCount} {fileCount === 1 ? "Dokument" : "Dokumente"} · Schritt {stepIndex + 1} von {STEPS.length}
+          {fileCount} {fileCount === 1 ? "Dokument" : "Dokumente"} werden verarbeitet
         </p>
 
-        <div className="max-w-xs mx-auto mb-4">
-          <Progress value={progress} className="h-1.5" />
-        </div>
-
-        {/* Step indicators */}
+        {/* Step indicators – pulse dots, no progress bar */}
         <div className="flex justify-center gap-6 mt-4">
           {STEPS.map((s, i) => {
             const Icon = s.icon;
             const isActive = i === stepIndex;
-            const isDone = i < stepIndex;
             return (
               <div key={i} className="flex flex-col items-center gap-1">
                 <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 ${
-                    isDone
-                      ? "bg-primary text-primary-foreground"
-                      : isActive
-                      ? "bg-primary/20 text-primary ring-2 ring-primary/30"
+                  className={`flex h-8 w-8 items-center justify-center rounded-full transition-all duration-500 ${
+                    isActive
+                      ? "bg-primary/20 text-primary ring-2 ring-primary/30 scale-110"
                       : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {isDone ? (
-                    <CheckCircle2 className="h-4 w-4" />
-                  ) : (
-                    <Icon className={`h-4 w-4 ${isActive ? "animate-pulse" : ""}`} />
-                  )}
+                  <Icon className={`h-4 w-4 ${isActive ? "animate-pulse" : ""}`} />
                 </div>
               </div>
             );
