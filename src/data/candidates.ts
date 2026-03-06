@@ -12,7 +12,7 @@ export interface MatchResult {
   domainFit: number | null;     // 0–5
   levelFit: number | null;      // 0–5
   languageMatch: boolean | null;
-  locationStatus: "ok" | "remote_unclear" | "mismatch" | null;
+  locationStatus: "ok" | "commutable" | "relocation_needed" | "remote_only" | "mismatch" | null;
   comment: string;
   totalScore: number;           // computed 0–100
 }
