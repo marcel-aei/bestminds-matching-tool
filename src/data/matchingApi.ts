@@ -10,7 +10,7 @@ interface WebhookMatchResult {
   domain_fit: number | null;
   level_fit: number | null;
   language_match: boolean | null;
-  location_status: "ok" | "remote_unclear" | "mismatch" | null;
+  location_status: "ok" | "commutable" | "relocation_needed" | "remote_only" | "mismatch" | null;
   Kommentar: string;
   vakanz_title: string;
   vakanz_id: number;

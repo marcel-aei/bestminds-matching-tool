@@ -73,11 +73,13 @@ function LanguageBadge({ value }: { value: boolean | null }) {
   );
 }
 
-function LocationBadge({ status }: { status: "ok" | "remote_unclear" | "mismatch" | null }) {
+function LocationBadge({ status }: { status: "ok" | "commutable" | "relocation_needed" | "remote_only" | "mismatch" | null }) {
   const config: Record<string, { icon: typeof Check; label: string; cls: string }> = {
-    ok:             { icon: Check,      label: "Standort passt",     cls: "text-success" },
-    remote_unclear: { icon: HelpCircle, label: "Remote unklar",      cls: "text-warning" },
-    mismatch:       { icon: X,          label: "Standort passt nicht", cls: "text-destructive" },
+    ok:                 { icon: Check,      label: "Standort passt",       cls: "text-success" },
+    commutable:         { icon: MapPin,     label: "Pendelbar",            cls: "text-warning" },
+    relocation_needed:  { icon: HelpCircle, label: "Umzug nötig",         cls: "text-warning" },
+    remote_only:        { icon: Check,      label: "Remote",              cls: "text-success" },
+    mismatch:           { icon: X,          label: "Standort passt nicht", cls: "text-destructive" },
   };
 
   if (!status) return (
