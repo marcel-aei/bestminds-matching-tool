@@ -1,6 +1,6 @@
 import { CandidateWithMatches, MatchResult } from "@/data/candidates";
 import { Vacancy } from "@/data/vacancies";
-import { User, ChevronDown, ChevronUp, ExternalLink, Star, Check, X, MapPin } from "lucide-react";
+import { User, ChevronDown, ChevronUp, ExternalLink, Star, Check, X, MapPin, HelpCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
@@ -21,20 +21,16 @@ function getScoreLabel(score: number) {
   return "Gering";
 }
 
-/** Renders 1–5 dots for a dimension */
-function DotRating({ value, max = 5 }: { value: number; max?: number }) {
+function DotRating({ value }: { value: number | null }) {
+  if (value === null) return <span className="text-[10px] text-muted-foreground">n/a</span>;
   return (
-    <div className="flex gap-1">
-      {Array.from({ length: max }, (_, i) => (
+    <div className="flex gap-0.5">
+      {Array.from({ length: 5 }, (_, i) => (
         <div
           key={i}
-          className={`h-2.5 w-2.5 rounded-full transition-colors ${
+          className={`h-2 w-2 rounded-full ${
             i < value
-              ? value >= 4
-                ? "bg-match-high"
-                : value >= 3
-                ? "bg-match-medium"
-                : "bg-match-low"
+              ? value >= 4 ? "bg-match-high" : value >= 3 ? "bg-match-medium" : "bg-match-low"
               : "bg-border"
           }`}
         />
@@ -43,13 +39,19 @@ function DotRating({ value, max = 5 }: { value: number; max?: number }) {
   );
 }
 
-function DimensionRow({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-xs text-muted-foreground whitespace-nowrap">{label}</span>
-      <DotRating value={value} />
-    </div>
+function LocationBadge({ status }: { status: string | null }) {
+  if (!status) return (
+    <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+      <HelpCircle className="h-3 w-3" /> unbekannt
+    </span>
   );
+  const map: Record<string, { label: string; cls: string }> = {
+    ok: { label: "Standort ✓", cls: "text-success" },
+    remote_unclear: { label: "Remote unklar", cls: "text-warning" },
+    mismatch: { label: "Standort ✗", cls: "text-destructive" },
+  };
+  const info = map[status] ?? { label: status, cls: "text-muted-foreground" };
+  return <span className={`text-[10px] font-medium ${info.cls}`}>{info.label}</span>;
 }
 
 const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
@@ -58,7 +60,6 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
 
   return (
     <div className="glass-card rounded-xl overflow-hidden">
-      {/* Candidate header */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between p-5 text-left hover:bg-muted/50 transition-colors"
@@ -92,12 +93,10 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
 
       {expanded && (
         <div className="border-t border-border">
-          {/* Candidate summary */}
           <div className="px-5 py-3 bg-muted/30 text-sm text-muted-foreground">
             {candidate.summary} · {candidate.experience} · {candidate.education}
           </div>
 
-          {/* Matches */}
           {candidate.matches.length === 0 ? (
             <div className="p-5 text-sm text-muted-foreground text-center">
               Keine passenden Vakanzen gefunden.
@@ -108,83 +107,66 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
                 const vacancy = vacancies.find((v) => v.id === match.vacancyId);
                 if (!vacancy) return null;
                 return (
-                  <div key={match.vacancyId} className="p-5">
-                    {/* Top row: score + vacancy title */}
-                    <div className="flex items-start gap-4 mb-3">
-                      {/* Total Score */}
+                  <div key={match.vacancyId} className="p-5 space-y-3">
+                    {/* Header row */}
+                    <div className="flex items-center gap-3">
                       <div
-                        className={`flex-shrink-0 flex h-12 w-12 items-center justify-center rounded-lg text-sm font-bold ${getScoreColor(match.totalScore)}`}
+                        className={`flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg text-xs font-bold ${getScoreColor(match.totalScore)}`}
                       >
                         {match.totalScore}%
                       </div>
-
-                      {/* Vacancy info */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-display font-semibold text-sm truncate">
-                            {vacancy.title}
-                          </h4>
-                          <Badge variant="outline" className="text-xs font-normal flex-shrink-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-display font-semibold text-sm truncate">{vacancy.title}</h4>
+                          <Badge variant="outline" className="text-[10px] font-normal flex-shrink-0 py-0 px-1.5">
                             {vacancy.ort}
                           </Badge>
                           {vacancy.url && (
-                            <a
-                              href={vacancy.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0"
-                            >
-                              <ExternalLink className="h-3.5 w-3.5" />
+                            <a href={vacancy.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0">
+                              <ExternalLink className="h-3 w-3" />
                             </a>
                           )}
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          {getScoreLabel(match.totalScore)}
-                        </span>
                       </div>
+                      <span className="text-[10px] text-muted-foreground flex-shrink-0">{getScoreLabel(match.totalScore)}</span>
                     </div>
 
-                    {/* Dimension grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-2 mb-3 pl-16">
-                      <DimensionRow label="Tech Fit" value={match.techFit} />
-                      <DimensionRow label="Role Fit" value={match.roleFit} />
-                      <DimensionRow label="Domain Fit" value={match.domainFit} />
-                      <DimensionRow label="Level Fit" value={match.levelFit} />
-                    </div>
-
-                    {/* Flags row */}
-                    <div className="flex items-center gap-4 mb-3 pl-16">
-                      <div className="flex items-center gap-1.5 text-xs">
-                        {match.languageMatch ? (
-                          <Check className="h-3.5 w-3.5 text-success" />
+                    {/* Compact dimensions + flags in one row */}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pl-[52px]">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-muted-foreground w-12">Tech</span>
+                        <DotRating value={match.techFit} />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-muted-foreground w-12">Role</span>
+                        <DotRating value={match.roleFit} />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-muted-foreground w-12">Domain</span>
+                        <DotRating value={match.domainFit} />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-muted-foreground w-12">Level</span>
+                        <DotRating value={match.levelFit} />
+                      </div>
+                      <div className="flex items-center gap-1 border-l border-border pl-3">
+                        {match.languageMatch === null ? (
+                          <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                        ) : match.languageMatch ? (
+                          <Check className="h-3 w-3 text-success" />
                         ) : (
-                          <X className="h-3.5 w-3.5 text-destructive" />
+                          <X className="h-3 w-3 text-destructive" />
                         )}
-                        <span className="text-muted-foreground">Sprache</span>
+                        <span className="text-[10px] text-muted-foreground">Sprache</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-xs">
-                        <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span
-                          className={
-                            match.locationStatus === "ok"
-                              ? "text-success"
-                              : "text-warning"
-                          }
-                        >
-                          {match.locationStatus === "ok"
-                            ? "Standort passt"
-                            : match.locationStatus === "relocation"
-                            ? "Umzug nötig"
-                            : match.locationStatus}
-                        </span>
-                      </div>
+                      <LocationBadge status={match.locationStatus} />
                     </div>
 
                     {/* Comment */}
                     {match.comment && (
-                      <div className="pl-16 text-xs text-muted-foreground leading-relaxed bg-muted/30 rounded-md p-3">
+                      <p className="text-xs text-muted-foreground leading-relaxed pl-[52px]">
                         {match.comment}
-                      </div>
+                      </p>
                     )}
                   </div>
                 );
