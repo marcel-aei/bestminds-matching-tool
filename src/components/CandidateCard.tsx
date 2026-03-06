@@ -140,13 +140,13 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {candidate.matches.map((match) => {
+              {candidate.matches.map((match, idx) => {
                 const vacancy = vacancies.find((v) => v.id === match.vacancyId);
                 const title = vacancy?.title ?? match.vacancyTitle ?? match.vacancyId;
                 const ort = vacancy?.ort ?? "";
                 const url = vacancy?.url ?? match.vacancyUrl ?? "";
                 return (
-                  <div key={match.vacancyId} className="p-5 space-y-2.5">
+                  <div key={`${match.vacancyId}-${idx}`} className="p-5 space-y-2.5">
                     {/* Header row */}
                     <div className="flex items-center gap-3">
                       <div
