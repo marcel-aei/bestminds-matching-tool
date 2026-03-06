@@ -48,7 +48,7 @@ export function matchCandidateToVacancies(candidate: Candidate, vacancies: Vacan
       const domainFit = Math.max(1, Math.min(5, rawScore + Math.floor(Math.random() * 2)));
       const levelFit = Math.max(1, Math.min(5, Math.ceil(Math.random() * 5)));
       const languageMatch = Math.random() > 0.2;
-      const locationStatus = Math.random() > 0.3 ? "ok" : "relocation";
+      const locationStatus: "ok" | "remote_unclear" | "mismatch" = Math.random() > 0.3 ? "ok" : "remote_unclear";
 
       const totalScore = computeTotalScore(techFit, roleFit, domainFit, levelFit, languageMatch, locationStatus);
 
