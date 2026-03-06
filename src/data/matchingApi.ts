@@ -68,7 +68,7 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
       levelFit,
       languageMatch,
       locationStatus,
-      comment: item.Kommentar ?? "",
+      comment: item.Kommentar ?? item.kommentar ?? "",
       totalScore,
     });
   }
