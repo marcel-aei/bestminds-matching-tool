@@ -16,8 +16,8 @@ export async function fetchVacancies(): Promise<Vacancy[]> {
   if (!res.ok) throw new Error(`Fehler beim Laden der Vakanzen: ${res.status}`);
   const data = await res.json();
 
-  return data.map((item: any, index: number) => ({
-    id: String(index + 1),
+  return data.map((item: any) => ({
+    id: String(item.id ?? item.title),
     title: item.title ?? "Unbekannte Vakanz",
     ort: item.ort ?? "",
     aufgabengebiet: item.aufgabengebiet ?? "",

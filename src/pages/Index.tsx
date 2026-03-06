@@ -4,8 +4,8 @@ import UploadZone from "@/components/UploadZone";
 import CandidateCard from "@/components/CandidateCard";
 import VacancySidebar from "@/components/VacancySidebar";
 import { fetchVacancies, Vacancy } from "@/data/vacancies";
-import { CandidateWithMatches, generateCandidatesFromFiles } from "@/data/candidates";
-import { matchCandidateToVacancies } from "@/lib/matching";
+import { CandidateWithMatches } from "@/data/candidates";
+import { uploadAndMatch } from "@/data/matchingApi";
 import { Users, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -29,23 +29,19 @@ const Index = () => {
       .finally(() => setVacanciesLoading(false));
   }, []);
 
-  const handleUpload = useCallback((files: FileList) => {
-    if (vacancies.length === 0) {
-      toast.error("Vakanzen noch nicht geladen – bitte warten.");
-      return;
-    }
+  const handleUpload = useCallback(async (files: FileList) => {
     setIsProcessing(true);
-
-    setTimeout(() => {
-      const generated = generateCandidatesFromFiles(files);
-      const processed = generated.map((candidate) => ({
-        ...candidate,
-        matches: matchCandidateToVacancies(candidate, vacancies),
-      }));
-      setCandidates((prev) => [...prev, ...processed]);
+    try {
+      const results = await uploadAndMatch(files);
+      setCandidates((prev) => [...prev, ...results]);
+      toast.success(`${results.length} Kandidat(en) analysiert`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Matching fehlgeschlagen – bitte erneut versuchen.");
+    } finally {
       setIsProcessing(false);
-    }, 1800);
-  }, [vacancies]);
+    }
+  }, []);
 
   const sortedCandidates = useMemo(() => {
     return [...candidates].sort((a, b) => {
@@ -56,14 +52,15 @@ const Index = () => {
   }, [candidates]);
 
   const handleExport = useCallback(() => {
-    const rows: string[] = ["Kandidat;Titel;Vakanz;Score;Tech Fit;Role Fit;Domain Fit;Level Fit;Sprache;Standort;Kommentar"];
+    const rows: string[] = ["Kandidat;Vakanz;Score;Tech Fit;Role Fit;Domain Fit;Level Fit;Sprache;Standort;Kommentar"];
     sortedCandidates.forEach((c) => {
       if (c.matches.length === 0) {
-        rows.push(`${c.name};${c.title};Keine passende Vakanz;0;;;;;;;`);
+        rows.push(`${c.name};Keine passende Vakanz;0;;;;;;;`);
       } else {
         c.matches.forEach((m) => {
-          const v = vacancies.find((v) => v.id === m.vacancyId);
-          rows.push(`${c.name};${c.title};${v?.title ?? m.vacancyId};${m.totalScore}%;${m.techFit};${m.roleFit};${m.domainFit};${m.levelFit};${m.languageMatch ? "Ja" : "Nein"};${m.locationStatus};${m.comment}`);
+          const vacancy = vacancies.find((v) => v.id === m.vacancyId);
+          const title = vacancy?.title ?? m.vacancyTitle ?? m.vacancyId;
+          rows.push(`${c.name};${title};${m.totalScore}%;${m.techFit};${m.roleFit};${m.domainFit};${m.levelFit};${m.languageMatch === null ? "" : m.languageMatch ? "Ja" : "Nein"};${m.locationStatus ?? ""};${m.comment}`);
         });
       }
     });
