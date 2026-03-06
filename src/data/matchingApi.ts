@@ -5,14 +5,10 @@ const MATCHING_WEBHOOK = "https://valentum-engineering.app.n8n.cloud/webhook/cal
 
 interface WebhookMatchResult {
   candidate_name: string;
-  "Tech Fit": number | null;
-  "Role Fit": number | null;
-  "Domain Fit": number | null;
-  "Level Fit": number | null;
-  tech_fit?: number | null;
-  role_fit?: number | null;
-  domain_fit?: number | null;
-  level_fit?: number | null;
+  tech_fit: number | null;
+  role_fit: number | null;
+  domain_fit: number | null;
+  level_fit: number | null;
   language_match: boolean | null;
   location_status: "ok" | "commutable" | "relocation_needed" | "remote_only" | "mismatch" | null;
   Kommentar: string;
