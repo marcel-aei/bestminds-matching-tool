@@ -29,23 +29,19 @@ const Index = () => {
       .finally(() => setVacanciesLoading(false));
   }, []);
 
-  const handleUpload = useCallback((files: FileList) => {
-    if (vacancies.length === 0) {
-      toast.error("Vakanzen noch nicht geladen – bitte warten.");
-      return;
-    }
+  const handleUpload = useCallback(async (files: FileList) => {
     setIsProcessing(true);
-
-    setTimeout(() => {
-      const generated = generateCandidatesFromFiles(files);
-      const processed = generated.map((candidate) => ({
-        ...candidate,
-        matches: matchCandidateToVacancies(candidate, vacancies),
-      }));
-      setCandidates((prev) => [...prev, ...processed]);
+    try {
+      const results = await uploadAndMatch(files);
+      setCandidates((prev) => [...prev, ...results]);
+      toast.success(`${results.length} Kandidat(en) analysiert`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Matching fehlgeschlagen – bitte erneut versuchen.");
+    } finally {
       setIsProcessing(false);
-    }, 1800);
-  }, [vacancies]);
+    }
+  }, []);
 
   const sortedCandidates = useMemo(() => {
     return [...candidates].sort((a, b) => {

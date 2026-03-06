@@ -148,7 +148,9 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
             <div className="divide-y divide-border">
               {candidate.matches.map((match) => {
                 const vacancy = vacancies.find((v) => v.id === match.vacancyId);
-                if (!vacancy) return null;
+                const title = vacancy?.title ?? match.vacancyTitle ?? match.vacancyId;
+                const ort = vacancy?.ort ?? "";
+                const url = vacancy?.url ?? match.vacancyUrl ?? "";
                 return (
                   <div key={match.vacancyId} className="p-5 space-y-2.5">
                     {/* Header row */}
@@ -160,12 +162,14 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <h4 className="font-display font-semibold text-sm truncate">{vacancy.title}</h4>
-                          <Badge variant="outline" className="text-[10px] font-normal flex-shrink-0 py-0 px-1.5">
-                            {vacancy.ort}
-                          </Badge>
-                          {vacancy.url && (
-                            <a href={vacancy.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0">
+                          <h4 className="font-display font-semibold text-sm truncate">{title}</h4>
+                          {ort && (
+                            <Badge variant="outline" className="text-[10px] font-normal flex-shrink-0 py-0 px-1.5">
+                              {ort}
+                            </Badge>
+                          )}
+                          {url && (
+                            <a href={url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0">
                               <ExternalLink className="h-3 w-3" />
                             </a>
                           )}
