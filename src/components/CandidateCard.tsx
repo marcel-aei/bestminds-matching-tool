@@ -1,6 +1,6 @@
 import { CandidateWithMatches, MatchResult } from "@/data/candidates";
 import { Vacancy } from "@/data/vacancies";
-import { User, ChevronDown, ChevronUp, ExternalLink, Star, Check, X, MapPin, HelpCircle } from "lucide-react";
+import { User, ChevronDown, ChevronUp, ExternalLink, Star, Check, X, MapPin, HelpCircle, Minus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
@@ -22,7 +22,15 @@ function getScoreLabel(score: number) {
 }
 
 function DotRating({ value }: { value: number | null }) {
-  if (value === null) return <span className="text-[10px] text-muted-foreground">n/a</span>;
+  if (value === null) {
+    return (
+      <div className="flex items-center gap-0.5">
+        {Array.from({ length: 5 }, (_, i) => (
+          <Minus key={i} className="h-2 w-2 text-border" />
+        ))}
+      </div>
+    );
+  }
   return (
     <div className="flex gap-0.5">
       {Array.from({ length: 5 }, (_, i) => (
@@ -39,19 +47,52 @@ function DotRating({ value }: { value: number | null }) {
   );
 }
 
-function LocationBadge({ status }: { status: string | null }) {
-  if (!status) return (
-    <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-      <HelpCircle className="h-3 w-3" /> unbekannt
+function FitItem({ label, value }: { label: string; value: number | null }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[11px] text-muted-foreground leading-none">{label}</span>
+      <DotRating value={value} />
+    </div>
+  );
+}
+
+function LanguageBadge({ value }: { value: boolean | null }) {
+  if (value === null) return (
+    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+      <HelpCircle className="h-3 w-3" /> Sprache unklar
     </span>
   );
-  const map: Record<string, { label: string; cls: string }> = {
-    ok: { label: "Standort ✓", cls: "text-success" },
-    remote_unclear: { label: "Remote unklar", cls: "text-warning" },
-    mismatch: { label: "Standort ✗", cls: "text-destructive" },
+  return value ? (
+    <span className="inline-flex items-center gap-1 text-[11px] text-success">
+      <Check className="h-3 w-3" /> Sprache
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1 text-[11px] text-destructive">
+      <X className="h-3 w-3" /> Sprache
+    </span>
+  );
+}
+
+function LocationBadge({ status }: { status: "ok" | "remote_unclear" | "mismatch" | null }) {
+  const config: Record<string, { icon: typeof Check; label: string; cls: string }> = {
+    ok:             { icon: Check,      label: "Standort passt",     cls: "text-success" },
+    remote_unclear: { icon: HelpCircle, label: "Remote unklar",      cls: "text-warning" },
+    mismatch:       { icon: X,          label: "Standort passt nicht", cls: "text-destructive" },
   };
-  const info = map[status] ?? { label: status, cls: "text-muted-foreground" };
-  return <span className={`text-[10px] font-medium ${info.cls}`}>{info.label}</span>;
+
+  if (!status) return (
+    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+      <MapPin className="h-3 w-3" /> Keine Angabe
+    </span>
+  );
+
+  const c = config[status];
+  const Icon = c.icon;
+  return (
+    <span className={`inline-flex items-center gap-1 text-[11px] ${c.cls}`}>
+      <Icon className="h-3 w-3" /> {c.label}
+    </span>
+  );
 }
 
 const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
@@ -107,7 +148,7 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
                 const vacancy = vacancies.find((v) => v.id === match.vacancyId);
                 if (!vacancy) return null;
                 return (
-                  <div key={match.vacancyId} className="p-5 space-y-3">
+                  <div key={match.vacancyId} className="p-5 space-y-2.5">
                     {/* Header row */}
                     <div className="flex items-center gap-3">
                       <div
@@ -127,38 +168,21 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
                             </a>
                           )}
                         </div>
+                        <span className="text-[10px] text-muted-foreground">{getScoreLabel(match.totalScore)}</span>
                       </div>
-                      <span className="text-[10px] text-muted-foreground flex-shrink-0">{getScoreLabel(match.totalScore)}</span>
                     </div>
 
-                    {/* Compact dimensions + flags in one row */}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pl-[52px]">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-muted-foreground w-12">Tech</span>
-                        <DotRating value={match.techFit} />
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-muted-foreground w-12">Role</span>
-                        <DotRating value={match.roleFit} />
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-muted-foreground w-12">Domain</span>
-                        <DotRating value={match.domainFit} />
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-muted-foreground w-12">Level</span>
-                        <DotRating value={match.levelFit} />
-                      </div>
-                      <div className="flex items-center gap-1 border-l border-border pl-3">
-                        {match.languageMatch === null ? (
-                          <HelpCircle className="h-3 w-3 text-muted-foreground" />
-                        ) : match.languageMatch ? (
-                          <Check className="h-3 w-3 text-success" />
-                        ) : (
-                          <X className="h-3 w-3 text-destructive" />
-                        )}
-                        <span className="text-[10px] text-muted-foreground">Sprache</span>
-                      </div>
+                    {/* Fits – 2×2 grid */}
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-1.5 pl-[52px]">
+                      <FitItem label="Tech" value={match.techFit} />
+                      <FitItem label="Role" value={match.roleFit} />
+                      <FitItem label="Domain" value={match.domainFit} />
+                      <FitItem label="Level" value={match.levelFit} />
+                    </div>
+
+                    {/* Flags */}
+                    <div className="flex items-center gap-4 pl-[52px]">
+                      <LanguageBadge value={match.languageMatch} />
                       <LocationBadge status={match.locationStatus} />
                     </div>
 
