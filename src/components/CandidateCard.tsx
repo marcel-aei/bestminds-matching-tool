@@ -226,6 +226,16 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
         </div>
       )}
     </div>
+
+    {candidate.cvBlobUrl && (
+      <CvViewerDialog
+        open={cvOpen}
+        onOpenChange={setCvOpen}
+        blobUrl={candidate.cvBlobUrl}
+        candidateName={candidate.name}
+      />
+    )}
+    </>
   );
 };
 
