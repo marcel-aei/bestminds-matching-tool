@@ -15,11 +15,23 @@ const CvViewerDialog = ({ open, onOpenChange, blobUrl, candidateName }: CvViewer
           <DialogTitle className="font-display text-base">CV – {candidateName}</DialogTitle>
         </DialogHeader>
         <div className="flex-1 min-h-0">
-          <iframe
-            src={blobUrl}
-            className="w-full h-full border-0 rounded-b-lg"
-            title={`CV von ${candidateName}`}
-          />
+          <object
+            data={`${blobUrl}#navpanes=0`}
+            type="application/pdf"
+            className="w-full h-full rounded-b-lg"
+          >
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
+              <p className="text-sm">PDF-Vorschau nicht verfügbar.</p>
+              <a
+                href={blobUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary underline"
+              >
+                PDF in neuem Tab öffnen
+              </a>
+            </div>
+          </object>
         </div>
       </DialogContent>
     </Dialog>
