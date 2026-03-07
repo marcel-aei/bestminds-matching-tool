@@ -1,8 +1,9 @@
 import { CandidateWithMatches, MatchResult } from "@/data/candidates";
 import { Vacancy } from "@/data/vacancies";
-import { User, ChevronDown, ChevronUp, ExternalLink, Star, Check, X, MapPin, HelpCircle, Minus } from "lucide-react";
+import { User, ChevronDown, ChevronUp, ExternalLink, Star, Check, X, MapPin, HelpCircle, Minus, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import CvViewerDialog from "@/components/CvViewerDialog";
 
 interface CandidateCardProps {
   candidate: CandidateWithMatches;
@@ -99,9 +100,11 @@ function LocationBadge({ status }: { status: "ok" | "commutable" | "relocation_n
 
 const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
   const [expanded, setExpanded] = useState(true);
+  const [cvOpen, setCvOpen] = useState(false);
   const topMatches = candidate.matches.filter((m) => m.totalScore >= 60);
 
   return (
+    <>
     <div className="glass-card rounded-xl overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
@@ -114,8 +117,21 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-3">
               <h3 className="font-display font-semibold text-base">{candidate.name}</h3>
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <Badge variant="secondary" className="font-normal">
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {candidate.cvBlobUrl && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCvOpen(true);
+                      }}
+                      className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors bg-muted rounded px-2 py-1"
+                      title="CV anzeigen"
+                    >
+                      <FileText className="h-3 w-3" />
+                      CV
+                    </button>
+                  )}
+                  <Badge variant="secondary" className="font-normal">
                   {candidate.matches.length} {candidate.matches.length === 1 ? "Match" : "Matches"}
                 </Badge>
                 {topMatches.length > 0 && (
@@ -211,6 +227,16 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
         </div>
       )}
     </div>
+
+    {candidate.cvBlobUrl && (
+      <CvViewerDialog
+        open={cvOpen}
+        onOpenChange={setCvOpen}
+        blobUrl={candidate.cvBlobUrl}
+        candidateName={candidate.name}
+      />
+    )}
+    </>
   );
 };
 

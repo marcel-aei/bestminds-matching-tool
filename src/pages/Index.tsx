@@ -32,7 +32,31 @@ const Index = () => {
   const handleUpload = useCallback(async (files: FileList) => {
     setIsProcessing(true);
     try {
+      // Create blob URLs for each file to allow in-app viewing
+      const fileMap = new Map<string, string>();
+      Array.from(files).forEach((file) => {
+        fileMap.set(file.name, URL.createObjectURL(file));
+      });
+
       const results = await uploadAndMatch(files);
+
+      // Try to match files to candidates by filename similarity
+      const fileEntries = Array.from(fileMap.entries());
+      results.forEach((candidate, idx) => {
+        // Try matching candidate name in filename
+        const matched = fileEntries.find(([filename]) =>
+          candidate.name.split(" ").some((part) =>
+            part.length > 2 && filename.toLowerCase().includes(part.toLowerCase())
+          )
+        );
+        if (matched) {
+          candidate.cvBlobUrl = matched[1];
+        } else if (fileEntries[idx]) {
+          // Fallback: match by position (1:1 mapping)
+          candidate.cvBlobUrl = fileEntries[idx][1];
+        }
+      });
+
       setCandidates((prev) => [...prev, ...results]);
       toast.success(`${results.length} Kandidat(en) analysiert`);
     } catch (err) {
