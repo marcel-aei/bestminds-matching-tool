@@ -105,38 +105,40 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
     <div className="glass-card rounded-xl overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-5 text-left hover:bg-muted/50 transition-colors"
+        className="w-full p-5 text-left hover:bg-muted/50 transition-colors"
       >
-        <div className="flex items-center gap-4">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+        <div className="flex items-start gap-4">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 flex-shrink-0 mt-0.5">
             <User className="h-5 w-5 text-primary" />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="font-display font-semibold text-base">{candidate.name}</h3>
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="font-display font-semibold text-base">{candidate.name}</h3>
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <Badge variant="secondary" className="font-normal">
+                  {candidate.matches.length} {candidate.matches.length === 1 ? "Match" : "Matches"}
+                </Badge>
+                {topMatches.length > 0 && (
+                  <Badge className="bg-success/10 text-success border-0 font-normal">
+                    <Star className="h-3 w-3 mr-1" />
+                    {topMatches.length} stark
+                  </Badge>
+                )}
+                {expanded ? (
+                  <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                )}
+              </div>
+            </div>
             {candidate.summary && (
-              <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5 flex flex-wrap gap-1">
+              <p className="text-[11px] text-muted-foreground leading-relaxed mt-1.5 flex flex-wrap gap-1">
                 {candidate.summary.split(",").map((tag, i) => (
                   <span key={i} className="inline-block bg-muted rounded px-1.5 py-0.5">{tag.trim()}</span>
                 ))}
               </p>
             )}
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="secondary" className="font-normal">
-            {candidate.matches.length} {candidate.matches.length === 1 ? "Match" : "Matches"}
-          </Badge>
-          {topMatches.length > 0 && (
-            <Badge className="bg-success/10 text-success border-0 font-normal">
-              <Star className="h-3 w-3 mr-1" />
-              {topMatches.length} stark
-            </Badge>
-          )}
-          {expanded ? (
-            <ChevronUp className="h-4 w-4 text-muted-foreground" />
-          ) : (
-            <ChevronDown className="h-4 w-4 text-muted-foreground" />
-          )}
         </div>
       </button>
 
