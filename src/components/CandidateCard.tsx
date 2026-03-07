@@ -111,11 +111,13 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
           <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
             <User className="h-5 w-5 text-primary" />
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <h3 className="font-display font-semibold text-base">{candidate.name}</h3>
             {candidate.summary && (
-              <p className="text-[11px] text-muted-foreground leading-snug mt-0.5 max-w-md truncate" title={candidate.summary}>
-                {candidate.summary}
+              <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5 flex flex-wrap gap-1">
+                {candidate.summary.split(",").map((tag, i) => (
+                  <span key={i} className="inline-block bg-muted rounded px-1.5 py-0.5">{tag.trim()}</span>
+                ))}
               </p>
             )}
           </div>
