@@ -42,6 +42,7 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
 
   // Group results by candidate_name
   const grouped = new Map<string, MatchResult[]>();
+  const summaries = new Map<string, string>();
 
   for (const item of raw) {
     const name = item.candidate_name ?? "Unbekannt";
