@@ -116,8 +116,21 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-3">
               <h3 className="font-display font-semibold text-base">{candidate.name}</h3>
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <Badge variant="secondary" className="font-normal">
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {candidate.cvBlobUrl && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCvOpen(true);
+                      }}
+                      className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors bg-muted rounded px-2 py-1"
+                      title="CV anzeigen"
+                    >
+                      <FileText className="h-3 w-3" />
+                      CV
+                    </button>
+                  )}
+                  <Badge variant="secondary" className="font-normal">
                   {candidate.matches.length} {candidate.matches.length === 1 ? "Match" : "Matches"}
                 </Badge>
                 {topMatches.length > 0 && (
