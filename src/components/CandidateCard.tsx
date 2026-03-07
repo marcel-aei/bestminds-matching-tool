@@ -113,6 +113,11 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
           </div>
           <div>
             <h3 className="font-display font-semibold text-base">{candidate.name}</h3>
+            {candidate.summary && (
+              <p className="text-[11px] text-muted-foreground leading-snug mt-0.5 max-w-md truncate" title={candidate.summary}>
+                {candidate.summary}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-3">

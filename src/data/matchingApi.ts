@@ -5,6 +5,7 @@ const MATCHING_WEBHOOK = "https://valentum-engineering.app.n8n.cloud/webhook/cal
 
 interface WebhookMatchResult {
   candidate_name: string;
+  candidate_summary?: string;
   tech_fit: number | null;
   role_fit: number | null;
   domain_fit: number | null;
@@ -41,12 +42,14 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
 
   // Group results by candidate_name
   const grouped = new Map<string, MatchResult[]>();
+  const summaries = new Map<string, string>();
 
   for (const item of raw) {
     const name = item.candidate_name ?? "Unbekannt";
 
     if (!grouped.has(name)) {
       grouped.set(name, []);
+      if (item.candidate_summary) summaries.set(name, item.candidate_summary);
     }
 
     const techFit = item.tech_fit ?? null;
@@ -84,6 +87,7 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
     results.push({
       id: `api-${batch}-${idx++}`,
       name,
+      summary: summaries.get(name),
       matches,
     });
   }
