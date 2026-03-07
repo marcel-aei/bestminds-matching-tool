@@ -20,4 +20,5 @@ export interface MatchResult {
 
 export interface CandidateWithMatches extends Candidate {
   matches: MatchResult[];
+  cvBlobUrl?: string;
 }
