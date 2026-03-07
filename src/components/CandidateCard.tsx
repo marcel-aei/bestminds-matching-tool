@@ -100,6 +100,7 @@ function LocationBadge({ status }: { status: "ok" | "commutable" | "relocation_n
 
 const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
   const [expanded, setExpanded] = useState(true);
+  const [cvOpen, setCvOpen] = useState(false);
   const topMatches = candidate.matches.filter((m) => m.totalScore >= 60);
 
   return (
