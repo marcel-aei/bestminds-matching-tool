@@ -87,6 +87,7 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
     results.push({
       id: `api-${batch}-${idx++}`,
       name,
+      summary: summaries.get(name),
       matches,
     });
   }

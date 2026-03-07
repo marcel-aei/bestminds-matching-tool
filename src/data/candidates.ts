@@ -1,6 +1,7 @@
 export interface Candidate {
   id: string;
   name: string;
+  summary?: string;
 }
 
 export interface MatchResult {
