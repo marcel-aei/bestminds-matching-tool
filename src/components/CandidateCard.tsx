@@ -1,8 +1,9 @@
 import { CandidateWithMatches, MatchResult } from "@/data/candidates";
 import { Vacancy } from "@/data/vacancies";
-import { User, ChevronDown, ChevronUp, ExternalLink, Star, Check, X, MapPin, HelpCircle, Minus } from "lucide-react";
+import { User, ChevronDown, ChevronUp, ExternalLink, Star, Check, X, MapPin, HelpCircle, Minus, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import CvViewerDialog from "@/components/CvViewerDialog";
 
 interface CandidateCardProps {
   candidate: CandidateWithMatches;
