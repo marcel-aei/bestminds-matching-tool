@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { ChevronLeft, ChevronRight, Loader2, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import * as pdfjsLib from "pdfjs-dist";
 
@@ -13,6 +13,8 @@ interface CvViewerDialogProps {
   candidateName: string;
 }
 
+const ZOOM_STEPS = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5];
+
 const CvViewerDialog = ({ open, onOpenChange, blobUrl, candidateName }: CvViewerDialogProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,12 +22,16 @@ const CvViewerDialog = ({ open, onOpenChange, blobUrl, candidateName }: CvViewer
   const [page, setPage] = useState(1);
   const [numPages, setNumPages] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [zoomIdx, setZoomIdx] = useState(2); // default 100%
+
+  const zoom = ZOOM_STEPS[zoomIdx];
 
   useEffect(() => {
     if (!open) return;
     setLoading(true);
     setPage(1);
     setPdf(null);
+    setZoomIdx(2);
 
     const loadPdf = async () => {
       try {
@@ -50,9 +56,10 @@ const CvViewerDialog = ({ open, onOpenChange, blobUrl, candidateName }: CvViewer
       const canvas = canvasRef.current!;
       const ctx = canvas.getContext("2d")!;
 
-      const containerWidth = container.clientWidth;
+      const containerWidth = container.clientWidth - 32; // padding
       const viewport = p.getViewport({ scale: 1 });
-      const scale = containerWidth / viewport.width;
+      const baseScale = containerWidth / viewport.width;
+      const scale = baseScale * zoom;
       const scaledViewport = p.getViewport({ scale });
 
       canvas.width = scaledViewport.width;
@@ -61,34 +68,57 @@ const CvViewerDialog = ({ open, onOpenChange, blobUrl, candidateName }: CvViewer
       await p.render({ canvasContext: ctx, viewport: scaledViewport }).promise;
     };
     renderPage();
-  }, [pdf, page]);
+  }, [pdf, page, zoom]);
+
+  const zoomIn = useCallback(() => setZoomIdx(i => Math.min(i + 1, ZOOM_STEPS.length - 1)), []);
+  const zoomOut = useCallback(() => setZoomIdx(i => Math.max(i - 1, 0)), []);
+  const resetZoom = useCallback(() => setZoomIdx(2), []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl w-[90vw] h-[85vh] flex flex-col p-0 gap-0">
-        <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="font-display text-base">CV – {candidateName}</DialogTitle>
-            {numPages > 1 && (
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="h-7 w-7" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-xs text-muted-foreground">{page} / {numPages}</span>
-                <Button variant="ghost" size="icon" className="h-7 w-7" disabled={page >= numPages} onClick={() => setPage(p => p + 1)}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
+        <DialogHeader className="px-4 py-3 border-b border-border flex-shrink-0">
+          <div className="flex items-center justify-between gap-4">
+            <DialogTitle className="font-display text-sm truncate">CV – {candidateName}</DialogTitle>
+
+            <div className="flex items-center gap-1 flex-shrink-0">
+              {/* Zoom controls */}
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={zoomOut} disabled={zoomIdx <= 0} title="Verkleinern">
+                <ZoomOut className="h-3.5 w-3.5" />
+              </Button>
+              <button onClick={resetZoom} className="text-[11px] text-muted-foreground w-10 text-center hover:text-foreground transition-colors" title="Zoom zurücksetzen">
+                {Math.round(zoom * 100)}%
+              </button>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={zoomIn} disabled={zoomIdx >= ZOOM_STEPS.length - 1} title="Vergrößern">
+                <ZoomIn className="h-3.5 w-3.5" />
+              </Button>
+
+              {/* Divider */}
+              {numPages > 1 && <div className="w-px h-4 bg-border mx-1" />}
+
+              {/* Page navigation */}
+              {numPages > 1 && (
+                <>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                  </Button>
+                  <span className="text-[11px] text-muted-foreground w-10 text-center">{page} / {numPages}</span>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" disabled={page >= numPages} onClick={() => setPage(p => p + 1)}>
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </DialogHeader>
+
         <div ref={containerRef} className="flex-1 min-h-0 overflow-auto flex justify-center bg-muted/30 p-4">
           {loading ? (
             <div className="flex items-center justify-center h-full">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : (
-            <canvas ref={canvasRef} className="max-w-full shadow-md rounded" />
+            <canvas ref={canvasRef} className="shadow-md rounded" />
           )}
         </div>
       </DialogContent>
