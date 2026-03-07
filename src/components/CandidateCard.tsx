@@ -104,6 +104,7 @@ const CandidateCard = ({ candidate, vacancies }: CandidateCardProps) => {
   const topMatches = candidate.matches.filter((m) => m.totalScore >= 60);
 
   return (
+    <>
     <div className="glass-card rounded-xl overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
