@@ -49,6 +49,7 @@ export async function uploadAndMatch(files: FileList): Promise<CandidateWithMatc
 
     if (!grouped.has(name)) {
       grouped.set(name, []);
+      if (item.candidate_summary) summaries.set(name, item.candidate_summary);
     }
 
     const techFit = item.tech_fit ?? null;
