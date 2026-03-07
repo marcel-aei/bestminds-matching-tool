@@ -5,6 +5,7 @@ const MATCHING_WEBHOOK = "https://valentum-engineering.app.n8n.cloud/webhook/cal
 
 interface WebhookMatchResult {
   candidate_name: string;
+  candidate_summary?: string;
   tech_fit: number | null;
   role_fit: number | null;
   domain_fit: number | null;
