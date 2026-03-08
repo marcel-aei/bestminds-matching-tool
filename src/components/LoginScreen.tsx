@@ -32,7 +32,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               className="h-14"
             />
           </div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight font-display">
             ACE – Matching Tool
           </h1>
         </div>

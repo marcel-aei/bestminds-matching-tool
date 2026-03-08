@@ -20,6 +20,7 @@ const Index = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
+    if (!authenticated) return;
     fetchVacancies()
       .then((v) => {
         setVacancies(v);
@@ -30,7 +31,7 @@ const Index = () => {
         toast.error("Vakanzen konnten nicht geladen werden.");
       })
       .finally(() => setVacanciesLoading(false));
-  }, []);
+  }, [authenticated]);
 
   const handleUpload = useCallback(async (files: FileList) => {
     setIsProcessing(true);
