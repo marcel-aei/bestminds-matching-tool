@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import Header from "@/components/Header";
+import LoginScreen from "@/components/LoginScreen";
 import UploadZone from "@/components/UploadZone";
 import CandidateCard from "@/components/CandidateCard";
 import VacancySidebar from "@/components/VacancySidebar";
@@ -11,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const Index = () => {
+  const [authenticated, setAuthenticated] = useState(false);
+
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [vacanciesLoading, setVacanciesLoading] = useState(true);
   const [candidates, setCandidates] = useState<CandidateWithMatches[]>([]);
