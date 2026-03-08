@@ -45,7 +45,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Passwort eingeben"
-              className="w-full h-11 pl-10 pr-4 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full h-11 pl-10 pr-4 rounded-lg border border-input bg-white text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               autoFocus
             />
           </div>
