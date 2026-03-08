@@ -13,7 +13,7 @@ const Header = () => {
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span className="inline-block h-2 w-2 rounded-full bg-success" />
-          n8n Workflow verbunden (Mock)
+          n8n Workflow verbunden
         </div>
       </div>
     </header>

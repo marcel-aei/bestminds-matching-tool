@@ -22,7 +22,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-background px-4">
+    <div className="flex flex-col items-center justify-center h-screen bg-white px-4">
       <div className="w-full max-w-sm text-center space-y-8">
         <div className="space-y-5">
           <div className="bg-white rounded-xl p-4 inline-block shadow-sm border border-border">
@@ -32,7 +32,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               className="h-14"
             />
           </div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight font-display">
             ACE – Matching Tool
           </h1>
         </div>
