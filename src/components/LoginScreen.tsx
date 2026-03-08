@@ -22,7 +22,10 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-white px-4">
+    <div
+      className="flex flex-col items-center justify-center h-screen bg-white px-4"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+    >
       <div className="w-full max-w-sm text-center space-y-8">
         <div className="space-y-5">
           <div className="bg-white rounded-xl p-4 inline-block shadow-sm border border-[hsl(210,15%,88%)]">
@@ -32,7 +35,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               className="h-14"
             />
           </div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">
             Matching Tool
           </h1>
         </div>
@@ -46,17 +49,16 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Passwort eingeben"
               className="w-full h-11 pl-10 pr-4 rounded-lg border border-[hsl(210,15%,88%)] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(204,100%,30%)]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
               autoFocus
             />
           </div>
           {error && (
-            <p className="text-destructive text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>Falsches Passwort.</p>
+            <p className="text-destructive text-sm">Falsches Passwort.</p>
           )}
           <button
             type="submit"
             className="w-full h-11 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-colors"
-            style={{ fontFamily: "'Inter', sans-serif", backgroundColor: "hsl(204, 100%, 30%)" }}
+            style={{ backgroundColor: "hsl(204, 100%, 30%)" }}
           >
             Anmelden
           </button>
