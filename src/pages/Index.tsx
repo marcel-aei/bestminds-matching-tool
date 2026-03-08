@@ -100,6 +100,10 @@ const Index = () => {
     URL.revokeObjectURL(url);
   }, [sortedCandidates, vacancies]);
 
+  if (!authenticated) {
+    return <LoginScreen onLogin={() => setAuthenticated(true)} />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
