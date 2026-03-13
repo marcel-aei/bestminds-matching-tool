@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Lock } from "lucide-react";
+import bestmindsLogo from "@/assets/bestminds-logo.svg";
 
 interface LoginScreenProps {
   onLogin: () => void;
 }
 
-const PASSWORD = "valentum-demo-passwort";
+const PASSWORD = "bestminds-demo-passwort";
 
 const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [password, setPassword] = useState("");
@@ -30,8 +31,8 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
         <div className="space-y-5">
           <div className="bg-white rounded-xl p-4 inline-block shadow-sm border border-[hsl(210,15%,88%)]">
             <img
-              src="https://www.valentum.de/static/layout/valentum/site/valentum_engineering_logo.png"
-              alt="Valentum Engineering"
+              src={bestmindsLogo}
+              alt="BestMinds"
               className="h-14"
             />
           </div>
