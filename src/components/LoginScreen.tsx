@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Lock } from "lucide-react";
+import bestmindsLogo from "@/assets/bestminds-logo.svg";
 
 interface LoginScreenProps {
   onLogin: () => void;
