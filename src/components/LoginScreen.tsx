@@ -5,7 +5,7 @@ interface LoginScreenProps {
   onLogin: () => void;
 }
 
-const PASSWORD = "valentum-demo-passwort";
+const PASSWORD = "bestminds-demo-passwort";
 
 const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [password, setPassword] = useState("");
