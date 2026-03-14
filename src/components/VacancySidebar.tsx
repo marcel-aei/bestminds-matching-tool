@@ -62,25 +62,34 @@ const VacancySidebar = ({ vacancies, isLoading }: VacancySidebarProps) => {
                       </p>
                     </div>
                   )}
-                  {(v.ansprechpartner_name || v.ansprechpartner_email) && (
-                    <div className="border-t border-border pt-2">
-                      <p className="text-xs font-medium mb-1">Ansprechpartner:</p>
-                      {v.ansprechpartner_name && (
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <User className="h-3 w-3" />
-                          <span>{v.ansprechpartner_name}</span>
-                        </div>
-                      )}
-                      {v.ansprechpartner_email && (
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
-                          <Mail className="h-3 w-3" />
-                          <a href={`mailto:${v.ansprechpartner_email}`} className="hover:text-primary transition-colors underline">
-                            {v.ansprechpartner_email}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  {(v.ansprechpartner_name || v.ansprechpartner_email) && (() => {
+                    const names = v.ansprechpartner_name ? v.ansprechpartner_name.split(",").map(s => s.trim()).filter(Boolean) : [];
+                    const emails = v.ansprechpartner_email ? v.ansprechpartner_email.split(",").map(s => s.trim()).filter(Boolean) : [];
+                    const count = Math.max(names.length, emails.length);
+                    return (
+                      <div className="border-t border-border pt-2">
+                        <p className="text-xs font-medium mb-1">Ansprechpartner:</p>
+                        {Array.from({ length: count }).map((_, i) => (
+                          <div key={i} className={i > 0 ? "mt-1.5" : ""}>
+                            {names[i] && (
+                              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <User className="h-3 w-3" />
+                                <span>{names[i]}</span>
+                              </div>
+                            )}
+                            {emails[i] && (
+                              <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                                <Mail className="h-3 w-3" />
+                                <a href={`mailto:${emails[i]}`} className="hover:text-primary transition-colors underline">
+                                  {emails[i]}
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                   {v.url && (
                     <Button variant="outline" size="sm" className="w-full" asChild>
                       <a href={v.url} target="_blank" rel="noopener noreferrer">

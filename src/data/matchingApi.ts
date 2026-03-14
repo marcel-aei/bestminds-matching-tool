@@ -1,7 +1,7 @@
 import { CandidateWithMatches, MatchResult } from "@/data/candidates";
 import { computeTotalScore } from "@/lib/matching";
 
-const MATCHING_WEBHOOK = "https://valentum-engineering.app.n8n.cloud/webhook/calculate_matching";
+const MATCHING_WEBHOOK = "https://aeonintelligence.app.n8n.cloud/webhook/calculate_matching";
 
 interface WebhookMatchResult {
   candidate_name: string;
