@@ -9,7 +9,7 @@ export interface Vacancy {
   ansprechpartner_email: string;
 }
 
-const WEBHOOK_URL = "https://valentum-engineering.app.n8n.cloud/webhook/get_vakanzliste";
+const WEBHOOK_URL = "https://aeonintelligence.app.n8n.cloud/webhook/get_vakanzliste";
 
 export async function fetchVacancies(): Promise<Vacancy[]> {
   const res = await fetch(WEBHOOK_URL);
