@@ -94,7 +94,7 @@ const VacancySidebar = ({ vacancies, isLoading }: VacancySidebarProps) => {
                     <Button variant="outline" size="sm" className="w-full" asChild>
                       <a href={v.url} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-3.5 w-3.5 mr-2" />
-                        Auf valentum.de ansehen
+                        Auf bestminds.de ansehen
                       </a>
                     </Button>
                   )}
