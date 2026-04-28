@@ -1,6 +1,9 @@
 import { Upload, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
+
+const MAX_FILES = 3;
 
 interface UploadZoneProps {
   onUpload: (files: FileList) => void;
@@ -30,6 +33,10 @@ const UploadZone = ({ onUpload, isProcessing }: UploadZoneProps) => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     if (e.dataTransfer.files.length > 0) {
+      if (e.dataTransfer.files.length > MAX_FILES) {
+        toast.error(`Maximal ${MAX_FILES} Profile gleichzeitig hochladen.`);
+        return;
+      }
       setFileCount(e.dataTransfer.files.length);
       onUpload(e.dataTransfer.files);
     }
@@ -37,6 +44,11 @@ const UploadZone = ({ onUpload, isProcessing }: UploadZoneProps) => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      if (e.target.files.length > MAX_FILES) {
+        toast.error(`Maximal ${MAX_FILES} Profile gleichzeitig hochladen.`);
+        e.target.value = "";
+        return;
+      }
       const dt = new DataTransfer();
       Array.from(e.target.files).forEach((f) => dt.items.add(f));
       setFileCount(dt.files.length);
@@ -83,7 +95,7 @@ const UploadZone = ({ onUpload, isProcessing }: UploadZoneProps) => {
         Kandidaten-Exposés hochladen
       </h3>
       <p className="text-sm text-muted-foreground mb-4">
-        PDF oder Word-Dateien hierher ziehen oder klicken
+        PDF oder Word-Dateien hierher ziehen oder klicken (max. {MAX_FILES} Profile)
       </p>
       <Button variant="outline" size="sm">
         Dateien auswählen
