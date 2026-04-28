@@ -9,6 +9,7 @@ import { CandidateWithMatches } from "@/data/candidates";
 import { uploadAndMatch } from "@/data/matchingApi";
 import { Users, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -19,6 +20,7 @@ const Index = () => {
   const [candidates, setCandidates] = useState<CandidateWithMatches[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedVacancyIds, setSelectedVacancyIds] = useState<string[]>([]);
+  const [minScore, setMinScore] = useState(0);
 
   const toggleVacancy = useCallback((id: string) => {
     setSelectedVacancyIds((prev) =>
@@ -83,14 +85,17 @@ const Index = () => {
   }, []);
 
   const filteredCandidates = useMemo(() => {
-    if (selectedVacancyIds.length === 0) return candidates;
     return candidates
       .map((c) => ({
         ...c,
-        matches: c.matches.filter((m) => selectedVacancyIds.includes(m.vacancyId)),
+        matches: c.matches.filter(
+          (m) =>
+            (selectedVacancyIds.length === 0 || selectedVacancyIds.includes(m.vacancyId)) &&
+            m.totalScore >= minScore
+        ),
       }))
       .filter((c) => c.matches.length > 0);
-  }, [candidates, selectedVacancyIds]);
+  }, [candidates, selectedVacancyIds, minScore]);
 
   const sortedCandidates = useMemo(() => {
     return [...filteredCandidates].sort((a, b) => {
