@@ -18,6 +18,17 @@ const Index = () => {
   const [vacanciesLoading, setVacanciesLoading] = useState(true);
   const [candidates, setCandidates] = useState<CandidateWithMatches[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedVacancyIds, setSelectedVacancyIds] = useState<string[]>([]);
+
+  const toggleVacancy = useCallback((id: string) => {
+    setSelectedVacancyIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  }, []);
+  const selectAllVacancies = useCallback(() => {
+    setSelectedVacancyIds(vacancies.map((v) => v.id));
+  }, [vacancies]);
+  const clearVacancies = useCallback(() => setSelectedVacancyIds([]), []);
 
   useEffect(() => {
     if (!authenticated) return;
@@ -71,13 +82,23 @@ const Index = () => {
     }
   }, []);
 
+  const filteredCandidates = useMemo(() => {
+    if (selectedVacancyIds.length === 0) return candidates;
+    return candidates
+      .map((c) => ({
+        ...c,
+        matches: c.matches.filter((m) => selectedVacancyIds.includes(m.vacancyId)),
+      }))
+      .filter((c) => c.matches.length > 0);
+  }, [candidates, selectedVacancyIds]);
+
   const sortedCandidates = useMemo(() => {
-    return [...candidates].sort((a, b) => {
+    return [...filteredCandidates].sort((a, b) => {
       const bestA = a.matches.length > 0 ? Math.max(...a.matches.map((m) => m.totalScore)) : 0;
       const bestB = b.matches.length > 0 ? Math.max(...b.matches.map((m) => m.totalScore)) : 0;
       return bestB - bestA;
     });
-  }, [candidates]);
+  }, [filteredCandidates]);
 
   const handleExport = useCallback(() => {
     const rows: string[] = ["Kandidat;Vakanz;Score;Tech Fit;Role Fit;Domain Fit;Level Fit;Sprache;Standort;Kommentar"];
@@ -153,7 +174,14 @@ const Index = () => {
 
           {/* Sidebar */}
           <div>
-            <VacancySidebar vacancies={vacancies} isLoading={vacanciesLoading} />
+            <VacancySidebar
+              vacancies={vacancies}
+              isLoading={vacanciesLoading}
+              selectedIds={selectedVacancyIds}
+              onToggle={toggleVacancy}
+              onSelectAll={selectAllVacancies}
+              onClear={clearVacancies}
+            />
           </div>
         </div>
       </main>
