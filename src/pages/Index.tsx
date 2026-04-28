@@ -18,6 +18,17 @@ const Index = () => {
   const [vacanciesLoading, setVacanciesLoading] = useState(true);
   const [candidates, setCandidates] = useState<CandidateWithMatches[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedVacancyIds, setSelectedVacancyIds] = useState<string[]>([]);
+
+  const toggleVacancy = useCallback((id: string) => {
+    setSelectedVacancyIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  }, []);
+  const selectAllVacancies = useCallback(() => {
+    setSelectedVacancyIds(vacancies.map((v) => v.id));
+  }, [vacancies]);
+  const clearVacancies = useCallback(() => setSelectedVacancyIds([]), []);
 
   useEffect(() => {
     if (!authenticated) return;
