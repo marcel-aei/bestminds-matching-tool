@@ -9,6 +9,7 @@ import { CandidateWithMatches } from "@/data/candidates";
 import { uploadAndMatch } from "@/data/matchingApi";
 import { Users, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -19,6 +20,7 @@ const Index = () => {
   const [candidates, setCandidates] = useState<CandidateWithMatches[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedVacancyIds, setSelectedVacancyIds] = useState<string[]>([]);
+  const [minScore, setMinScore] = useState(0);
 
   const toggleVacancy = useCallback((id: string) => {
     setSelectedVacancyIds((prev) =>
@@ -83,14 +85,17 @@ const Index = () => {
   }, []);
 
   const filteredCandidates = useMemo(() => {
-    if (selectedVacancyIds.length === 0) return candidates;
     return candidates
       .map((c) => ({
         ...c,
-        matches: c.matches.filter((m) => selectedVacancyIds.includes(m.vacancyId)),
+        matches: c.matches.filter(
+          (m) =>
+            (selectedVacancyIds.length === 0 || selectedVacancyIds.includes(m.vacancyId)) &&
+            m.totalScore >= minScore
+        ),
       }))
       .filter((c) => c.matches.length > 0);
-  }, [candidates, selectedVacancyIds]);
+  }, [candidates, selectedVacancyIds, minScore]);
 
   const sortedCandidates = useMemo(() => {
     return [...filteredCandidates].sort((a, b) => {
@@ -144,6 +149,28 @@ const Index = () => {
           {/* Main content */}
           <div className="lg:col-span-2 space-y-6">
             <UploadZone onUpload={handleUpload} isProcessing={isProcessing} />
+
+            {candidates.length > 0 && (
+              <div className="glass-card rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm font-medium">
+                    Mindest-Score: <span className="text-primary font-semibold">{minScore}%</span>
+                  </label>
+                  {minScore > 0 && (
+                    <Button variant="ghost" size="sm" onClick={() => setMinScore(0)}>
+                      Zurücksetzen
+                    </Button>
+                  )}
+                </div>
+                <Slider
+                  value={[minScore]}
+                  onValueChange={(v) => setMinScore(v[0])}
+                  min={0}
+                  max={100}
+                  step={5}
+                />
+              </div>
+            )}
 
             {sortedCandidates.length > 0 && (
               <div>
