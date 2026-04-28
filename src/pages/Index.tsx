@@ -150,6 +150,28 @@ const Index = () => {
           <div className="lg:col-span-2 space-y-6">
             <UploadZone onUpload={handleUpload} isProcessing={isProcessing} />
 
+            {candidates.length > 0 && (
+              <div className="glass-card rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm font-medium">
+                    Mindest-Score: <span className="text-primary font-semibold">{minScore}%</span>
+                  </label>
+                  {minScore > 0 && (
+                    <Button variant="ghost" size="sm" onClick={() => setMinScore(0)}>
+                      Zurücksetzen
+                    </Button>
+                  )}
+                </div>
+                <Slider
+                  value={[minScore]}
+                  onValueChange={(v) => setMinScore(v[0])}
+                  min={0}
+                  max={100}
+                  step={5}
+                />
+              </div>
+            )}
+
             {sortedCandidates.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-4">
